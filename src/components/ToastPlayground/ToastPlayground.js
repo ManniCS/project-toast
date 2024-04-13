@@ -4,34 +4,25 @@ import Button from "../Button";
 
 import styles from "./ToastPlayground.module.css";
 
-import Toast from "../Toast";
 import ToastShelf from "../ToastShelf";
+
+import { ToastContext } from "../ToastProvider";
 
 const VARIANT_OPTIONS = ["notice", "warning", "success", "error"];
 
 function ToastPlayground() {
   const [message, setMessage] = React.useState("");
   const [variant, setVariant] = React.useState(VARIANT_OPTIONS[0]);
-  const [toasts, setToasts] = React.useState([]);
 
-  function addToast() {
-    newToast = { message, variant, id: crypto.randomUUID() };
-    newToasts = [...toasts, newToast];
-    setToasts(newToasts);
+  const { addToast } = React.useContext(ToastContext);
+
+  function handleSubmit() {
+    if (message === "") {
+      return;
+    }
+    addToast(message, variant);
     setMessage("");
     setVariant(VARIANT_OPTIONS[0]);
-  }
-  function dismissToast(id) {
-    const idx = toasts.findIndex((elem) => elem.id === id);
-    if (idx === -1) {
-      throw new Error(
-        `Trying to remove an element with a non-existent id: ${id}. Must be one of: ${toasts.map(
-          (elem) => elem.id
-        )}`
-      );
-    }
-    newToasts = toasts.toSpliced(idx, 1);
-    setToasts(newToasts);
   }
 
   return (
@@ -40,11 +31,11 @@ function ToastPlayground() {
         <img alt="Cute toast mascot" src="/toast.png" />
         <h1>Toast Playground</h1>
       </header>
-      <ToastShelf toasts={toasts} handleDismiss={dismissToast} />
+      <ToastShelf />
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          addToast();
+          handleSubmit();
         }}
       >
         <div className={styles.controlsWrapper}>
