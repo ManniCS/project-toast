@@ -1,5 +1,7 @@
 import React from "react";
 
+import useShortcut from "../../hooks/use-shortcut.js";
+
 export const ToastContext = React.createContext();
 
 function ToastProvider({ children }) {
@@ -17,18 +19,12 @@ function ToastProvider({ children }) {
     setToasts(newToasts);
   }
 
-  React.useEffect(() => {
-    function clearToasts(event) {
-      if (event.key !== "Escape") {
-        return;
-      }
+  useShortcut(
+    "Escape",
+    React.useCallback(() => {
       setToasts([]);
-    }
-    window.addEventListener("keydown", clearToasts);
-    return () => {
-      window.removeEventListener("keydown", clearToasts);
-    };
-  }, []);
+    }, [])
+  );
 
   return (
     <ToastContext.Provider
